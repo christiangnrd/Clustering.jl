@@ -55,17 +55,17 @@ in the denominator is computed. It can be one of:
 """
 function mutualinfo(a, b; method::Union{Nothing, Symbol} = nothing, normed::Union{Nothing, Bool} = nothing, kwargs...)
     # Disallow `method` and `normed` to be used together
-    if isnothing(method)
-        isnothing(normed) || Base.depwarn("`normed` kwarg is deprecated, please use `method=:normalized` instead of `normed=true`, and `method=:classic` instead of `normed=false'", :mutualinfo)
-        method = if isnothing(normed) || normed
+    if method === nothing
+        (normed === nothing) || Base.depwarn("`normed` kwarg is deprecated, please use `method=:normalized` instead of `normed=true`, and `method=:classic` instead of `normed=false'", :mutualinfo)
+        method = if (normed === nothing) || normed
             :normalized
         else
             :classic
         end
     else
-        isnothing(normed) || throw(ArgumentError("`normed` kwarg is not compatible with `method` kwarg"))
+        (normed === nothing) || throw(ArgumentError("`normed` kwarg is not compatible with `method` kwarg"))
     end
-    # Little hack to ensure the correct error is thrown
+    # Little hack to ensure the invalid kwargs error is thrown
     if method === :adjusted && length(kwargs) >= 1 && :aggregate ∉ keys(kwargs)
         method = :classic
     end

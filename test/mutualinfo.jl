@@ -27,10 +27,17 @@ using Clustering
     @test mutualinfo(a1, a2; method=:adjusted, aggregate=:max) ≈ 0.3437 atol=1.0e-4
     @test mutualinfo(a1, a2; method=:adjusted, aggregate=:min) ≈ 0.4348 atol=1.0e-4
 
-    # test errors
-    @test_throws "ArgumentError: `normed` kwarg is not compatible with `method` kwarg" mutualinfo(a1, a2; method=:adjusfted, normed=false)
-    @test_throws "ArgumentError: mutualinfo(): `method=:adjusfted` is not supported" mutualinfo(a1, a2; method=:adjusfted, aggregate=:min)
-    @test_throws "ArgumentError: mutualinfo(): unsupported kwargs used." mutualinfo(a1, a2; method=:adjusted, notaggregate=:min)
-    @test_throws "ArgumentError: mutualinfo(): unsupported kwargs used." mutualinfo(a1, a2; method=:classic, notaggregate=:min)
+    # test errors. More precise tests on Julia 1.8+ when supported
 
+    if VERSION >= v"1.8"
+        @test_throws "ArgumentError: `normed` kwarg is not compatible with `method` kwarg" mutualinfo(a1, a2; method=:adjusted, normed=false)
+        @test_throws "ArgumentError: mutualinfo(): `method=:adjusfted` is not supported" mutualinfo(a1, a2; method=:adjusfted, aggregate=:min)
+        @test_throws "ArgumentError: mutualinfo(): unsupported kwargs used." mutualinfo(a1, a2; method=:adjusted, notaggregate=:min)
+        @test_throws "ArgumentError: mutualinfo(): unsupported kwargs used." mutualinfo(a1, a2; method=:classic, notaggregate=:min)
+    else
+        @test_throws ArgumentError mutualinfo(a1, a2; method=:adjusted, normed=false)
+        @test_throws ArgumentError mutualinfo(a1, a2; method=:adjusfted, aggregate=:min)
+        @test_throws ArgumentError mutualinfo(a1, a2; method=:adjusted, notaggregate=:min)
+        @test_throws ArgumentError mutualinfo(a1, a2; method=:classic, notaggregate=:min)
+    end
 end
